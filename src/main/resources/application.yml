@@ -1,0 +1,17 @@
+server:
+  port: 8080
+
+spring:
+  neo4j:
+    uri: ${MEMGRAPH_URL:bolt://localhost:7687}
+    authentication:
+      username: ${MEMGRAPH_USER:neo4j}
+      password: ${MEMGRAPH_PASSWORD:password}
+  data:
+    neo4j:
+      database: ${MEMGRAPH_DATABASE:memgraph}
+
+logging:
+  level:
+    org.springframework.data.neo4j.cypher: trace
+    org.neo4j: trace

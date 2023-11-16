@@ -1,0 +1,55 @@
+version: "3.8"
+
+name: memgraph-spring-data-demo
+
+services:
+  memgraph:
+    container_name: db
+    image: memgraph/memgraph-platform:latest
+    environment:
+      MEMGRAPH_USER: neo4j
+      MEMGRAPH_PASSWORD: password
+      MGCONSOLE: "--username ${MEMGRAPH_USER} --password ${MEMGRAPH_PASSWORD}"
+      MEMGRAPH: "--log-level=TRACE --bolt-server-name-for-init=Neo4j/5.9.0"
+    restart: unless-stopped
+    volumes:
+      - mg_lib:/var/lib/memgraph
+      - mg_log:/var/log/memgraph
+      - mg_etc:/etc/memgraph
+    ports:
+      - "7687:7687"
+      - "3000:3000"
+      - "7444:7444"
+
+  neo4j:
+    container_name: db
+    image: neo4j:latest
+    environment:
+      NEO4J_initial_dbms_default__database: memgraph
+      NEO4J_AUTH: neo4j/password
+    restart: unless-stopped
+    volumes:
+      - neo4j-data:/data
+      - neo4j-logs:/logs
+    ports:
+      - "7687:7687"
+      - "7474:7474"
+
+  memgraph-spring-data-demo:
+    container_name: memgraph-spring-data-demo
+    image: memgraph-spring-data-demo:latest
+    environment:
+      MEMGRAPH_URL: bolt://db:7687
+      MEMGRAPH_USER: neo4j
+      MEMGRAPH_PASSWORD: password
+      MEMGRAPH_DATABASE: memgraph
+    restart: no
+    ports:
+      - "8080:8080"
+
+volumes:
+  neo4j-data:
+  neo4j-logs:
+  mg_lib:
+  mg_log:
+  mg_etc:
